@@ -1,7 +1,7 @@
 # Установка
 
 ```bash
-git clone git@github.com:garinvit/funtech_test.git
+git clone https://github.com/garinvit/funtech_test.git
 
 cd funtech_test
 ```
@@ -17,7 +17,7 @@ git push -u origin main
 Копируем файл `.env.example` в файл `.env`
 
 ```bash
-cp .env.example .env.dev
+cp .env.example .env
 ```
 
 Редактируем файл '.env.dev', 
