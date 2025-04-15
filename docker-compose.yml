@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: funtech_db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    container_name: funtech_web
+    restart: always
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - ./:/usr/src/app/
+    command: ./run_server.sh
+    expose:
+      - "8000"
+
+  redis:
+     image: redis:alpine
+     expose:
+       - '6379'
+     ports:
+        - '6379:6379'
+
+  celery:
+    build:
+      context: .
+    env_file:
+      - .env
+    command: >
+      sh -c "celery -A app worker --loglevel=info"
+    volumes:
+      - ./:/usr/src/app/
+    depends_on:
+      - redis
+    restart: always
+
+  celery-beat:
+    env_file:
+      - .env
+    build:
+      context: .
+    command: >
+      sh -c "celery -A app beat --loglevel=info"
+    volumes:
+      - ./:/usr/src/app/
+    depends_on:
+      - redis
+    restart: always
+
+
+  nginx:
+    image: nginx:alpine
+    restart: always
+    volumes:
+     - ./nginx.conf:/etc/nginx/nginx.conf
+     - ./staticfiles/.:/code/public/staticfiles
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
