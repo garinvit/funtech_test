@@ -20,6 +20,11 @@ git push -u origin main
 cp .env.example .env
 ```
 
+Создайте папку под логи
+```bash
+mkdir logs
+```
+
 Редактируем файл '.env.dev', 
 заполняем своими данными.
 Особенно важно задать:
